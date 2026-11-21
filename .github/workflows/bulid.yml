@@ -32,6 +32,8 @@ jobs:
           cp TouchJoystick.gd game/TouchJoystick.gd
           cp TouchLook.gd game/TouchLook.gd
 
+          sed -i '/^\[rendering\]/a textures/vram_compression/import_etc2_astc=true' game/project.godot
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -99,6 +101,7 @@ jobs:
           test -f "$HOME/.android/debug.keystore"
           test -f game/project.godot
           test -f game/export_presets.cfg
+          grep "import_etc2_astc=true" game/project.godot
 
       - name: Import Godot project
         run: |
