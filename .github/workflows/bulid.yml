@@ -101,6 +101,7 @@ jobs:
           test -f "$HOME/.android/debug.keystore"
           test -f game/project.godot
           test -f game/export_presets.cfg
+          test -d game/build
           grep "import_etc2_astc=true" game/project.godot
 
       - name: Import Godot project
@@ -110,12 +111,12 @@ jobs:
       - name: Build Android APK
         run: |
           godot --headless --verbose --path game \
-            --export-debug "Android" game/build/THE_BEST_SCENE.apk
+            --export-debug "Android" build/THE_BEST_SCENE.apk
 
       - name: Build Windows EXE
         run: |
           godot --headless --verbose --path game \
-            --export-release "Windows Desktop" game/build/THE_BEST_SCENE.exe
+            --export-release "Windows Desktop" build/THE_BEST_SCENE.exe
 
       - name: Upload builds
         uses: actions/upload-artifact@v4
