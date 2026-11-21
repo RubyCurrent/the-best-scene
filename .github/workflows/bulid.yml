@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -118,10 +118,15 @@ jobs:
           godot --headless --verbose --path game \
             --export-release "Windows Desktop" build/THE_BEST_SCENE.exe
 
-      - name: Upload builds
-        uses: actions/upload-artifact@v4
+      - name: Publish direct downloads
+        uses: softprops/action-gh-release@v2
         with:
-          name: THE-BEST-SCENE-BUILDS
-          path: game/build/*
-          if-no-files-found: error
+          tag_name: latest
+          name: THE BEST SCENE - Latest Build
+          prerelease: true
+          make_latest: false
+          files: |
+            game/build/THE_BEST_SCENE.apk
+            game/build/THE_BEST_SCENE.exe
+          fail_on_unmatched_files: true
           
