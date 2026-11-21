@@ -3,15 +3,20 @@ name: THE BEST SCENE Build
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 40
 
     steps:
-      - name: Download project
+      - name: Checkout project
         uses: actions/checkout@v4
 
       - name: Setup Java
@@ -21,25 +26,30 @@ jobs:
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
-      - name: Install Android tools
+      - name: Install Android packages
         run: |
-          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Install Godot
+      - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.4.1
           use-dotnet: false
           include-templates: true
 
+      - name: Check Godot
+        run: godot --version
+
       - name: Import project
         run: godot --headless --editor --path . --quit
 
-      - name: Build APK
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Build Android APK
         run: |
-          mkdir -p build
           godot --headless --path . --export-debug "Android" build/THE_BEST_SCENE.apk
 
       - name: Build Windows EXE
@@ -51,4 +61,5 @@ jobs:
         with:
           name: THE-BEST-SCENE-BUILDS
           path: build/*
+          if-no-files-found: error
           
