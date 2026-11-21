@@ -19,6 +19,20 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
 
+      - name: Prepare Godot project
+        run: |
+          mkdir -p game
+          mkdir -p game/build
+
+          cp project.godot/project.godot game/project.godot
+          cp export_presets.cfg/export_presets.cfg game/export_presets.cfg
+          cp Main.tscn/Main.tscn game/Main.tscn
+
+          cp Main.gd game/Main.gd
+          cp Player.gd game/Player.gd
+          cp TouchJoystick.gd game/TouchJoystick.gd
+          cp TouchLook.gd game/TouchLook.gd
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -30,7 +44,7 @@ jobs:
 
       - name: Install Android packages
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
@@ -39,27 +53,22 @@ jobs:
           use-dotnet: false
           include-templates: true
 
-      - name: Check Godot
-        run: godot --version
-
-      - name: Import project
-        run: godot --headless --editor --path . --quit
-
-      - name: Create build directory
-        run: mkdir -p build
+      - name: Check project
+        run: |
+          godot --headless --editor --path game --quit
 
       - name: Build Android APK
         run: |
-          godot --headless --path . --export-debug "Android" build/THE_BEST_SCENE.apk
+          godot --headless --path game --export-debug "Android" game/build/THE_BEST_SCENE.apk
 
       - name: Build Windows EXE
         run: |
-          godot --headless --path . --export-release "Windows Desktop" build/THE_BEST_SCENE.exe
+          godot --headless --path game --export-release "Windows Desktop" game/build/THE_BEST_SCENE.exe
 
       - name: Upload builds
         uses: actions/upload-artifact@v4
         with:
           name: THE-BEST-SCENE-BUILDS
-          path: build/*
+          path: game/build/*
           if-no-files-found: error
           
